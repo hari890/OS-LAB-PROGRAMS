@@ -1,0 +1,291 @@
+
+FCFS:
+#include<stdio.h>
+struct process{
+char pr[2];
+int burst_time;
+int wait_time;
+};
+void main(){
+int n,i;
+printf("input the no of process:");
+scanf("%d",&n);
+struct process ar[n];
+int wt=0;
+for(i=0;i<n;i++)
+{
+printf("input the process name:");
+scanf("%s",&ar[i].pr);
+printf("input the burst time:");
+scanf("%d",&ar[i].burst_time);
+ar[i].wait_time=wt;
+wt=wt+ar[i].burst_time;
+}
+float avg_wait_time=0;
+printf("Turn around Time=wait_time+burst_time\n");
+for(i=0;i<n;i++){
+avg_wait_time=avg_wait_time+ar[i].wait_time;
+printf("%s\t",ar[i].pr);
+printf("%d\n",(ar[i].wait_time+ar[i].burst_time));
+}
+avg_wait_time=avg_wait_time/n;
+printf("Average Waiting Time is:");
+printf("%f",avg_wait_time);
+}
+
+SRTF
+
+  #include<stdio.h>
+struct process{
+char pr[2];
+int arriv_time;
+int burst_time;
+int wait_time;
+};
+void findmin_timeprs(struct process ar[],int n){
+int i,j;
+for(i=1;i<n;i++){
+for(j=i+1;j<n;j++){
+if(ar[i].burst_time>ar[j].burst_time){
+struct process temp=ar[i];
+ar[i]=ar[j];
+ar[j]=temp;
+}
+}
+}
+}
+void main(){
+int n,i;
+printf("input the no of process:");
+scanf("%d",&n);
+struct process ar[n];
+for(i=0;i<n;i++)
+{
+printf("input the process name:");
+scanf("%s",&ar[i].pr);
+printf("input the arrival time:");
+scanf("%d",&ar[i].arriv_time);
+printf("input the burst time:");
+scanf("%d",&ar[i].burst_time);
+}
+findmin_timeprs(ar,n);
+int wt=0;
+for(i=0;i<n;i++){
+ar[i].wait_time=wt-ar[i].arriv_time;
+wt=wt+ar[i].burst_time;
+}
+float avg_wait_time=0;
+printf("Turn around Time=wait_time+burst_time\n");
+for(i=0;i<n;i++){
+avg_wait_time=avg_wait_time+ar[i].wait_time;
+printf("%s\t",ar[i].pr);
+printf("%d\n",(ar[i].wait_time+ar[i].burst_time));
+}
+avg_wait_time=avg_wait_time/n;
+printf("Average Waiting Time is:");
+printf("%f",avg_wait_time);
+}
+
+SJF
+
+  #include<stdio.h>
+struct process{
+char pr[2];
+int arriv_time;
+int burst_time;
+int dupburst_time;
+int laststart_point;
+int lastend_point;
+int wait_time;
+};
+void sort(struct process ar[],int n){
+int i,j;
+for(i=0;i<n;i++){
+for(j=i+1;j<n;j++){
+if(ar[i].dupburst_time>ar[j].dupburst_time){
+struct process temp=ar[i];
+ar[i]=ar[j];
+ar[j]=temp;
+}
+}
+}
+}
+void main(){
+int n,i,j,k,cnt,p,temp,c;
+int *d;
+printf("input the no of process:");
+scanf("%d",&n);
+struct process ar[n];
+for(i=0;i<n;i++)
+{
+printf("input the process name:");
+scanf("%s",&ar[i].pr);
+printf("input the arrival time:");
+scanf("%d",&ar[i].arriv_time);
+printf("input the burst time:");
+scanf("%d",&ar[i].burst_time);
+ar[i].dupburst_time=ar[i].burst_time;
+}
+cnt=0;
+i=0;
+k=1;
+j=0;
+ar[0].laststart_point=i;
+ar[n-1].laststart_point=0;
+ar[0].lastend_point=0;
+ar[n-1].lastend_point=ar[n-1].arriv_time;
+while(i<ar[n-1].arriv_time){
+if(i==ar[k].arriv_time){
+ar[j].lastend_point=i;
+j+=1;
+ar[j].dupburst_time=ar[j].dupburst_time-1;
+ar[j].laststart_point=i;
+i++;
+k++;
+}
+else{
+ar[j].dupburst_time=ar[j].dupburst_time-1;
+i++;
+}
+}
+temp=ar[n-1].arriv_time;
+sort(ar,n);
+for(i=0;i<n;i++){
+if(ar[i].dupburst_time==0){
+ar[i].wait_time=0;
+}
+else{
+ar[i].wait_time=temp-ar[i].lastend_point;
+temp=temp+ar[i].dupburst_time;
+}
+}
+float avg_wait_time=0;
+printf("Turn around Time=wait_time+burst_time\n");
+for(i=0;i<n;i++){
+avg_wait_time=avg_wait_time+ar[i].wait_time;
+printf("%s\t",ar[i].pr);
+printf("%d\n",(ar[i].wait_time+ar[i].burst_time));
+}
+avg_wait_time=avg_wait_time/n;
+printf("Average Waiting Time is:");
+printf("%f",avg_wait_time);
+}
+
+ROUND ROBINS
+
+#include<stdio.h>
+struct process{
+char a[2];
+int bst_time,wait_time,dupburst_time,leave_time;
+};
+int burst_times(struct process p1[],int m)
+{
+int i;
+for(i=0;i<m;i++)
+{
+if(p1[i].dupburst_time!=0)
+return 1;
+}
+return 0;
+}
+void main(){
+int i,j,n,quant_time,ct=0,avg_wait_time=0,turn_arnd_time=0;
+struct process p[10];
+printf("input the no of process:");
+scanf("%d",&n);
+printf("input the Time quantum:");
+scanf("%d",&quant_time);
+for(i=0;i<n;i++)
+{
+printf("input the process name:");
+scanf("%s",&p[i].a);
+printf("input the bursttime:");
+scanf("%d",&p[i].bst_time);
+p[i].dupburst_time=p[i].bst_time;
+p[i].leave_time=0;
+p[i].wait_time=0;
+}
+while(burst_times(p,n))
+{
+for(i=0;i<n;i++)
+{
+if(p[i].dupburst_time==0){
+continue;
+}
+else if(p[i].dupburst_time>quant_time)
+{
+ p[i].dupburst_time=p[i].dupburst_time-quant_time;
+ p[i].wait_time=p[i].wait_time+ct-p[i].leave_time;
+ ct=ct+quant_time;
+ p[i].leave_time=ct;
+}
+else{
+   p[i].wait_time=p[i].wait_time+ct-p[i].leave_time;
+ct=ct+p[i].dupburst_time;
+p[i].dupburst_time=0;
+}
+}
+}
+for(i=0;i<n;i++)
+{
+printf("%d\n",p[i].wait_time);
+avg_wait_time=avg_wait_time+p[i].wait_time;
+turn_arnd_time=turn_arnd_time+p[i].bst_time+p[i].wait_time;
+printf("The turn around time of %s is %d\n",p[i].a,turn_arnd_time);
+}
+printf("The average waiting time is:%d",avg_wait_time/n);
+}
+
+PRIORITY.C
+
+  #include<stdio.h>
+struct process
+{
+char a[2];
+int burst_time,priority,wait_time;
+};
+int findprior(struct process k[],int n)
+{
+int temp=k[0].priority,ind=0,i;
+for(i=1;i<n;i++)
+{
+ if(k[i].priority<temp)
+ {
+     ind=i;
+temp=k[i].priority;
+   }
+}
+return ind;
+}
+void main()
+{
+  struct process p[20];
+  int i,j,n,temp=0;
+  float avg_wait_time=0;
+  printf("input the no of process:");
+  scanf("%d",&n);
+  for(i=0;i<n;i++)
+  {
+  printf("input the process name:");
+  scanf("%s",&p[i].a);
+    printf("input the burst time:");
+scanf("%d",&p[i].burst_time);
+    printf("input the priority:");
+    scanf("%d",&p[i].priority);
+   }
+   for(i=0;i<n;i++)
+   {
+    int k=findprior(p,n);
+    p[k].priority=10000;
+    p[k].wait_time=temp;
+    temp=temp+p[k].burst_time;
+   }
+   for(i=0;i<n;i++)
+   {
+    printf("waiting time is %d\n",p[i].wait_time);
+    printf("Turn around time is %d\n",p[i].wait_time+p[i].burst_time);
+    avg_wait_time=avg_wait_time+p[i].wait_time;
+   }
+   printf("Average waiting time is %f\n",avg_wait_time/n);
+}
+
